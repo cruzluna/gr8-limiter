@@ -15,11 +15,36 @@ var rdb = redis.NewClient(&redis.Options{
 
 var ctx = context.Background()
 
-func rateLimit(rdb *redis.Client, ip string, limit int64, windowSize int64) bool {
+type Request struct {
+	Kind string
+}
+
+type Config struct {
+	WindowSize int64 // length of window in milliseconds
+	Limit      int64 // requests allowed in window
+}
+
+func rateLimiter(requests chan Request, configs chan Config, responses chan bool) {
+	currentConfig := Config{
+		WindowSize: 500,
+		Limit:      2,
+	}
+	for {
+		select {
+		case req := <-requests:
+			success := rateLimit(rdb, req.Kind, currentConfig.WindowSize, currentConfig.Limit)
+			responses <- success
+		case config := <-configs:
+			currentConfig = config
+		}
+	}
+}
+
+func rateLimit(rdb *redis.Client, ip string, windowSize int64, limit int64) bool {
 	key := fmt.Sprintf("rate_limit:%s", ip)
 	now := time.Now().UnixNano() / int64(time.Millisecond)
 
-	rdb.ZRemRangeByScore(ctx, key, "-inf", fmt.Sprintf("%d", now-(1000*windowSize)))
+	rdb.ZRemRangeByScore(ctx, key, "-inf", fmt.Sprintf("%d", now-windowSize))
 
 	current, err := rdb.ZCard(ctx, key).Result()
 	if err != nil {
@@ -39,16 +64,23 @@ func rateLimit(rdb *redis.Client, ip string, limit int64, windowSize int64) bool
 }
 
 func test() {
-	ip := "123.45.67.89"
-	windowSize := int64(1) // seconds
-	limit := int64(5)      // per window
+	requests := make(chan Request)
+	configs := make(chan Config)
+	responses := make(chan bool)
 
-	for i := 1; i <= 7; i++ {
-		allowed := rateLimit(rdb, ip, limit, windowSize)
-		if allowed {
-			fmt.Printf("Request %d allowed.\n", i)
+	go rateLimiter(requests, configs, responses)
+
+	for i := 0; i < 10; i++ {
+		r := Request{Kind: "glorb"}
+		requests <- r
+
+		result := <-responses
+		canProceed := result
+
+		if canProceed {
+			fmt.Println("You can proceed")
 		} else {
-			fmt.Printf("Request %d blocked.\n", i)
+			fmt.Println("You cannot proceed")
 		}
 		time.Sleep(100 * time.Millisecond)
 	}
