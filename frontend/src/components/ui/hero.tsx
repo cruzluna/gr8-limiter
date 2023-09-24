@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@nextui-org/react";
+import { Button, Link } from "@nextui-org/react";
 import { ChevronIcon } from "./icons";
 
 export default function Hero() {
@@ -13,7 +13,13 @@ export default function Hero() {
         </span>
         limiting easy
       </h1>
-      <Button color="primary" variant="ghost" size="lg">
+      <Button
+        as={Link}
+        color="primary"
+        variant="ghost"
+        size="lg"
+        href="/sign-up"
+      >
         Get started
         <ChevronIcon />
       </Button>
