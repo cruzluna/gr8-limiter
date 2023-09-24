@@ -9,5 +9,7 @@ func main() {
 		return c.SendString("Hello, World 👋!")
 	})
 
+	test() // to remove
+
 	app.Listen(":3000")
 }
