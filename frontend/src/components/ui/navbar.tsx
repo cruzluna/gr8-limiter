@@ -7,11 +7,17 @@ import {
   Link,
   Button,
 } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 export default function StratusNavbar() {
+  const router = useRouter();
   return (
     <Navbar>
-      <NavbarBrand>
+      <NavbarBrand
+        onClick={() => {
+          router.push("/");
+        }}
+      >
         <p className="font-light text-xl text-inherit">stratus</p>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
@@ -22,7 +28,7 @@ export default function StratusNavbar() {
         </NavbarItem>
         <NavbarItem isActive>
           <Link href="#" aria-current="page">
-            Customers
+            Docs
           </Link>
         </NavbarItem>
         <NavbarItem>
