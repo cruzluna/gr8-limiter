@@ -14,11 +14,13 @@ export default function Hero() {
         your&nbsp;
         <TypeAnimation
           sequence={[
-            "Open AI credits", // Types 'One'
-            1000, // Waits 1s
+            2000, // Waits 2s
+            "OpenAI credits", // Types 'One'
+            2000, // Waits 1s
             "next.js routes", // Deletes 'One' and types 'Two'
             2000, // Waits 2s
             "API", // Types 'Three' without deleting 'Two'
+            2000, // Waits 2s
           ]}
           wrapper="span"
           cursor={true}
