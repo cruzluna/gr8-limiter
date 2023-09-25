@@ -18,7 +18,7 @@ export default function StratusNavbar() {
           router.push("/");
         }}
       >
-        <p className="font-light text-xl text-inherit">stratus</p>
+        <p className="font-light text-xl text-inherit">🌩️ stratus</p>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
