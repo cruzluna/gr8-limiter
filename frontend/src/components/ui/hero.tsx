@@ -2,16 +2,29 @@
 
 import { Button, Link } from "@nextui-org/react";
 import { ChevronIcon } from "./icons";
+import { TypeAnimation } from "react-type-animation";
 
 export default function Hero() {
   return (
     <div className="text-center">
       <h1 className="text-gradient my-6 text-4xl md:text-7xl">
-        make
         <span className="bg-gradient-to-r from-teal-300 via-blue-500 to-blue-800 bg-clip-text text-transparent">
-          &nbsp;rate&nbsp;
+          &nbsp;Protect&nbsp;
         </span>
-        limiting easy
+        your&nbsp;
+        <TypeAnimation
+          sequence={[
+            "Open AI credits", // Types 'One'
+            1000, // Waits 1s
+            "next.js routes", // Deletes 'One' and types 'Two'
+            2000, // Waits 2s
+            "API", // Types 'Three' without deleting 'Two'
+          ]}
+          wrapper="span"
+          cursor={true}
+          repeat={Infinity}
+          style={{ fontSize: "2.25rem", lineHeight: "2.5rem" }}
+        />
       </h1>
       <Button
         as={Link}
