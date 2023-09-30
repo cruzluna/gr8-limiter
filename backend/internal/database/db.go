@@ -11,12 +11,14 @@ type Database struct {
 	DB *pgx.Conn
 }
 
-// TABLE api_keys (
-//     id SERIAL PRIMARY KEY,
-//     api_key text NOT NULL UNIQUE,
-//     user_id integer NOT NULL,
-//     created_at timestamp DEFAULT current_timestamp,
-// )
+/*
+TABLE api_keys (
+    id SERIAL PRIMARY KEY,
+    api_key text NOT NULL UNIQUE,
+    user_id integer NOT NULL,
+    created_at timestamp DEFAULT current_timestamp,
+)
+*/
 
 type ApiTableRecord struct {
 	ApiKey string
@@ -34,7 +36,17 @@ func StartDatabase(ctx context.Context, dataSource string) (*Database, error) {
 		DB: conn,
 	}
 
+	err = database.DB.Ping(ctx)
+	if err != nil {
+		fmt.Println("Couldn't ping db.\n", err)
+		return nil, err
+	}
+
 	return database, nil
+}
+
+func (conn Database) CloseConn(ctx context.Context) error {
+	return conn.DB.Close(ctx)
 }
 
 func (conn Database) Insert(ctx context.Context, record ApiTableRecord) error {
@@ -43,6 +55,34 @@ func (conn Database) Insert(ctx context.Context, record ApiTableRecord) error {
 		"INSERT INTO api_keys (api_key, user_id) VALUES ($1,$2)",
 		record.ApiKey,
 		record.UserId,
+	)
+	return err
+}
+
+func (conn Database) DeleteByApiKey(ctx context.Context, apiKey string) error {
+	_, err := conn.DB.Exec(
+		ctx,
+		"DELETE FROM api_keys WHERE api_key = $1",
+		apiKey,
+	)
+	return err
+}
+
+func (conn Database) DeleteByUser(ctx context.Context, userId int32) error {
+	_, err := conn.DB.Exec(
+		ctx,
+		"DELETE FROM api_keys WHERE user_id = $1",
+		userId,
+	)
+	return err
+}
+
+func (conn Database) DeleteByUserAndApiKey(ctx context.Context, apiKey string, userId int32) error {
+	_, err := conn.DB.Exec(
+		ctx,
+		"DELETE FROM api_keys WHERE api_key = $1 AND user_id = $2",
+		apiKey,
+		userId,
 	)
 	return err
 }
