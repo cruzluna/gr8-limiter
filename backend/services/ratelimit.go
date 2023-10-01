@@ -1,4 +1,4 @@
-package main
+package services
 
 import (
 	"context"
@@ -8,28 +8,56 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+// Default: 5 req per sec
+const (
+	RedisDefaultLimit      int64 = 5
+	RedisDefaultWindowSize int64 = 1
+)
+
+type Option func(*RateConfig) error
+
 // Desired Rate = limit / windowSize (eg 5 requests per second)
 type RateConfig struct {
-	id         string
-	limit      int64 // requests allowed in window
-	windowSize int64 // length of window in milliseconds
+	Id         string // api key
+	Limit      int64  // requests allowed in window
+	WindowSize int64  // length of window in milliseconds
 }
 
-func NewRateLimterConfig(id string, limit int64, windowSize int64) *RateConfig {
-	return &RateConfig{
-		id:         id, // unique identifier for now
-		limit:      limit,
-		windowSize: windowSize,
+func WithLimit(limit int64) func(*RateConfig) error {
+	return func(rc *RateConfig) error {
+		rc.Limit = limit
+		return nil
 	}
+}
+
+func WithWindowSize(windowSize int64) func(*RateConfig) error {
+	return func(rc *RateConfig) error {
+		rc.WindowSize = windowSize
+		return nil
+	}
+}
+
+func NewRateLimterConfig(id string, opts ...Option) (RateConfig, error) {
+	rc := RateConfig{
+		Id:         id,
+		Limit:      RedisDefaultLimit,
+		WindowSize: RedisDefaultWindowSize,
+	}
+	for _, opt := range opts {
+		if err := opt(&rc); err != nil {
+			return RateConfig{}, fmt.Errorf("option failed %w", err)
+		}
+	}
+	return rc, nil
 }
 
 // Sliding window log
 func (rc RateConfig) rateLimit(ctx context.Context, rdb *redis.Client) bool {
-	key := fmt.Sprintf("rate_limit:%s", rc.id)
+	key := fmt.Sprintf("rate_limit:%s", rc.Id)
 	now := time.Now().UnixMilli()
 
 	// purge reqs before window
-	rdb.ZRemRangeByScore(ctx, key, "-inf", fmt.Sprintf("%d", now-(1000*rc.windowSize)))
+	rdb.ZRemRangeByScore(ctx, key, "-inf", fmt.Sprintf("%d", now-(1000*rc.WindowSize)))
 
 	// count number of reqs in curr window
 	current, err := rdb.ZCard(ctx, key).Result()
@@ -37,7 +65,7 @@ func (rc RateConfig) rateLimit(ctx context.Context, rdb *redis.Client) bool {
 		fmt.Println("Error:", err)
 		return false
 	}
-	if current >= rc.limit {
+	if current >= rc.Limit {
 		// rate limited
 		return false
 	}
@@ -48,6 +76,6 @@ func (rc RateConfig) rateLimit(ctx context.Context, rdb *redis.Client) bool {
 		Member: now,
 	})
 	// whole set should expire after window size
-	rdb.Expire(ctx, key, time.Duration(rc.windowSize)*time.Second)
+	rdb.Expire(ctx, key, time.Duration(rc.WindowSize)*time.Second)
 	return true
 }
