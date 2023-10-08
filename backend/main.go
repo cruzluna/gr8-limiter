@@ -1,32 +1,40 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
+	"os"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/api/router"
+	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/internal/database"
+	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/services"
 )
 
 func main() {
+	ctx := context.Background()
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	// os.Exit(1)
+	dbUrl := os.Getenv("DB_URL")
+	fmt.Println("DB URL: ", dbUrl)
+	err = database.Init(ctx, dbUrl)
+
+	if err != nil {
+		log.Fatalln("Error: ", err)
+	}
+
+	// redis
+	services.Init()
 
 	app := fiber.New()
-
-	rdb := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
-		DB:   0,
-	})
-	defer rdb.Close()
 
 	app.Use(recover.New())
 

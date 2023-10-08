@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -15,6 +16,12 @@ const (
 )
 
 type Option func(*RateConfig) error
+
+// singleton db connection
+var (
+	rdb  *redis.Client
+	once sync.Once
+)
 
 // Desired Rate = limit / windowSize (eg 5 requests per second)
 type RateConfig struct {
@@ -29,6 +36,16 @@ func WithLimit(limit int64) func(*RateConfig) error {
 		return nil
 	}
 }
+
+func Init() {
+	once.Do(func() {
+		rdb = redis.NewClient(&redis.Options{
+			Addr: "localhost:6379",
+			DB:   0,
+		})
+	})
+}
+
 
 func WithWindowSize(windowSize int64) func(*RateConfig) error {
 	return func(rc *RateConfig) error {
@@ -52,7 +69,7 @@ func NewRateLimterConfig(id string, opts ...Option) (RateConfig, error) {
 }
 
 // Sliding window log
-func (rc RateConfig) rateLimit(ctx context.Context, rdb *redis.Client) bool {
+func (rc *RateConfig) rateLimit(ctx context.Context) bool {
 	key := fmt.Sprintf("rate_limit:%s", rc.Id)
 	now := time.Now().UnixMilli()
 
