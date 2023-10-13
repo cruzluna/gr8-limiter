@@ -13,14 +13,14 @@ import (
 
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/api/router"
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/internal/database"
-	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/services"
+	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/services/ratelimit"
 )
 
 func main() {
 	ctx := context.Background()
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalln("Error loading .env file: ", err)
 	}
 
 	dbUrl := os.Getenv("DB_URL")
@@ -32,7 +32,8 @@ func main() {
 	}
 
 	// redis
-	services.Init()
+	ratelimit.Init()
+	// cache.Init(10)
 
 	app := fiber.New()
 
