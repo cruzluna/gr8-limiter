@@ -20,6 +20,7 @@ require (
 )
 
 require (
+	github.com/KnlnKS/list v0.0.0-20230925055628-bc9928426830
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.3.1 // indirect

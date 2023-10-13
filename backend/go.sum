@@ -1,3 +1,5 @@
+github.com/KnlnKS/list v0.0.0-20230925055628-bc9928426830 h1:qkOdZkUK83MAgK0ninUf0/vdsMIOmkSpp6gzmIjID7k=
+github.com/KnlnKS/list v0.0.0-20230925055628-bc9928426830/go.mod h1:mERgDbMzGKrCQ1h2jtB+1sel54Nr9TKz7pfz9BlWQE8=
 github.com/andybalholm/brotli v1.0.5 h1:8uQZIdzKmjc/iuPu7O2ioW48L81FgatrcpfFmiq/cCs=
 github.com/andybalholm/brotli v1.0.5/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
 github.com/cespare/xxhash/v2 v2.1.2 h1:YRXhKfTDauu4ajMg1TPgFO5jnlC2HCbmLXMcTG5cbYE=

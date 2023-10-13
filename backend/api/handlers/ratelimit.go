@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"fmt"
+	"context"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/services"
+	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/services/ratelimit"
 )
 
 func HandleRateLimit(c *fiber.Ctx) error {
@@ -15,34 +15,36 @@ func HandleRateLimit(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("API key missing from header.")
 	}
 
+	// TODO:
+	// 1. check if api key in cache
+	// 2. not in cache, check in db
+
 	limitString := c.Get("limit")
 	windowSizeString := c.Get("windowSize")
 
+	// validate headers
 	limit, err := strconv.ParseInt(limitString, 10, 64)
 	if err != nil {
-		limit = services.RedisDefaultLimit
+		limit = ratelimit.RedisDefaultLimit
 	}
 
 	windowSize, err := strconv.ParseInt(windowSizeString, 10, 64)
 	if err != nil {
-		windowSize = services.RedisDefaultWindowSize
+		windowSize = ratelimit.RedisDefaultWindowSize
 	}
 
-	s, err := services.NewRateLimterConfig(
+	s, err := ratelimit.NewRateLimterConfig(
 		id,
-		services.WithLimit(limit),
-		services.WithWindowSize(windowSize),
+		ratelimit.WithLimit(limit),
+		ratelimit.WithWindowSize(windowSize),
 	)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Unable to config rate limiter")
 	}
 
-	fmt.Println(s)
-
-	// validate headers
-
-	// 1. check if api key in cache
-	// 2. not in cache, check in db
-
-	return c.SendString("Hello, World 👋!")
+	// TODO: how should we handle context
+	if s.RateLimit(context.TODO()) {
+		return c.SendStatus(fiber.StatusOK)
+	}
+	return c.SendStatus(fiber.StatusTooManyRequests)
 }

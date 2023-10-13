@@ -1,4 +1,4 @@
-package services
+package ratelimit
 
 import (
 	"context"
@@ -46,7 +46,6 @@ func Init() {
 	})
 }
 
-
 func WithWindowSize(windowSize int64) func(*RateConfig) error {
 	return func(rc *RateConfig) error {
 		rc.WindowSize = windowSize
@@ -69,7 +68,7 @@ func NewRateLimterConfig(id string, opts ...Option) (RateConfig, error) {
 }
 
 // Sliding window log
-func (rc *RateConfig) rateLimit(ctx context.Context) bool {
+func (rc *RateConfig) RateLimit(ctx context.Context) bool {
 	key := fmt.Sprintf("rate_limit:%s", rc.Id)
 	now := time.Now().UnixMilli()
 
