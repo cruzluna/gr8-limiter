@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/KnlnKS/list"
@@ -18,16 +19,16 @@ type LRUCache[Value any] struct {
 }
 
 var (
-	ApiKeyCache *LRUCache[string]
+	ApiKeyCache *LRUCache[bool]
 	once        sync.Once
 )
 
 /*
 creates API key LRUCache with the given capacity.
 */
-func Init(capacity int) error {
+func InitApiKeyCache(capacity int) error {
 	once.Do(func() {
-		ApiKeyCache = New[string](capacity)
+		ApiKeyCache = New[bool](capacity)
 	})
 	return nil
 }
@@ -75,9 +76,11 @@ func (lru *LRUCache[Value]) Add(key string, value Value) {
 /*
 removes the given key from the cache.
 */
-func (lru *LRUCache[Value]) Remove(key string) {
+func (lru *LRUCache[Value]) Remove(key string) error {
 	if elem, ok := lru.cache[key]; ok {
 		lru.list.Remove(elem)
 		delete(lru.cache, key)
+		return nil
 	}
+	return fmt.Errorf("%s is not in the cache", key)
 }
