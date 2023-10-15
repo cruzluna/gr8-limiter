@@ -74,6 +74,15 @@ func (conn *Database) Insert(ctx context.Context, record ApiTableRecord) error {
 	return err
 }
 
+func (conn *Database) InsertEvent(ctx context.Context, apiKey string) error {
+	_, err := conn.DB.Exec(
+		ctx,
+		"INSERT INTO api_usage_event (time, api_key) VALUES (now(),$1)",
+		apiKey,
+	)
+	return err
+}
+
 func (conn *Database) DeleteByApiKey(ctx context.Context, apiKey string) error {
 	_, err := conn.DB.Exec(
 		ctx,
