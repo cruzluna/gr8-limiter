@@ -8,12 +8,13 @@ import { v4 as uuidv4 } from "uuid";
 export default function Home() {
   const { user, isLoaded } = useUser(); // get clerk user for clerkId
 
+  // POC
   const handleSubmit = async () => {
     console.log("in here");
 
     if (isLoaded) {
       try {
-        await fetch("http://localhost:3000/api/apikey", {
+        await fetch("/api/apikey", {
           method: "POST",
           body: JSON.stringify({
             api_key: uuidv4(),
@@ -39,6 +40,7 @@ export default function Home() {
           <Hero />
         </div>
       </section>
+      {/*POC*/}
       <Button onClick={handleSubmit}>test</Button>
     </div>
   );

@@ -39,7 +39,7 @@ export default function StratusNavbar() {
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem className="hidden lg:flex">
-          <Link href="/login-in">Login</Link>
+          <Link href="/sign-in">Login</Link>
         </NavbarItem>
         <NavbarItem>
           <Button as={Link} color="primary" href="/sign-up" variant="flat">
