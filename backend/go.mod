@@ -14,6 +14,7 @@ require (
 	github.com/jackc/pgx/v5 v5.4.3 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/posthog/posthog-go v0.0.0-20230801140217-d607812dee69 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
