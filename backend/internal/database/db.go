@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -21,15 +22,15 @@ type Database struct {
 /*
 TABLE api_keys (
     id SERIAL PRIMARY KEY,
-    api_key text NOT NULL UNIQUE,
-    user_id integer NOT NULL,
+    api_key uuid NOT NULL,
+    user_id text NOT NULL, // clerk user id
     created_at timestamp DEFAULT current_timestamp,
 )
 */
 
 type ApiTableRecord struct {
-	ApiKey string
-	UserId int32
+	ApiKey uuid.UUID
+	UserId string
 }
 
 func Init(ctx context.Context, dataSource string) error {
@@ -74,7 +75,8 @@ func (conn *Database) Insert(ctx context.Context, record ApiTableRecord) error {
 	return err
 }
 
-func (conn *Database) DeleteByApiKey(ctx context.Context, apiKey string) error {
+// delete by api key for api_keys table
+func (conn *Database) DeleteByApiKey(ctx context.Context, apiKey uuid.UUID) error {
 	_, err := conn.DB.Exec(
 		ctx,
 		"DELETE FROM api_keys WHERE api_key = $1",
@@ -83,7 +85,8 @@ func (conn *Database) DeleteByApiKey(ctx context.Context, apiKey string) error {
 	return err
 }
 
-func (conn *Database) DeleteByUser(ctx context.Context, userId int32) error {
+// delete by user id for api_keys table
+func (conn *Database) DeleteByUser(ctx context.Context, userId string) error {
 	_, err := conn.DB.Exec(
 		ctx,
 		"DELETE FROM api_keys WHERE user_id = $1",
@@ -92,10 +95,11 @@ func (conn *Database) DeleteByUser(ctx context.Context, userId int32) error {
 	return err
 }
 
+// delete by user id & api key for api_keys table
 func (conn *Database) DeleteByUserAndApiKey(
 	ctx context.Context,
-	apiKey string,
-	userId int32,
+	apiKey uuid.UUID,
+	userId string,
 ) error {
 	_, err := conn.DB.Exec(
 		ctx,
@@ -106,7 +110,8 @@ func (conn *Database) DeleteByUserAndApiKey(
 	return err
 }
 
-func (conn *Database) IsApiKeyInTable(ctx context.Context, apiKey string) bool {
+// determine if api key in api_keys table
+func (conn *Database) IsApiKeyInTable(ctx context.Context, apiKey uuid.UUID) bool {
 	var inTable bool
 	conn.DB.QueryRow(
 		ctx,

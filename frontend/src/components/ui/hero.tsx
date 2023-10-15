@@ -25,16 +25,9 @@ export default function Hero() {
           wrapper="span"
           cursor={true}
           repeat={Infinity}
-          style={{ fontSize: "2.25rem", lineHeight: "2.5rem" }}
         />
       </h1>
-      <Button
-        as={Link}
-        color="primary"
-        variant="ghost"
-        size="lg"
-        href="/sign-up"
-      >
+      <Button color="primary" variant="ghost" size="lg" href="/sign-up">
         Get started
         <ChevronIcon />
       </Button>
