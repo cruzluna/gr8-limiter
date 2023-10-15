@@ -1,5 +1,7 @@
 "use client";
 import { useCallback } from "react";
+import { useUser } from "@clerk/nextjs";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   AddNoteIcon,
@@ -90,6 +92,31 @@ export default function Page() {
     }
   }, []);
 
+  const { user, isLoaded } = useUser(); // get clerk user for clerkId
+
+  // POC
+  const handleSubmit = async () => {
+    console.log("in here");
+
+    if (isLoaded) {
+      try {
+        await fetch("/api/apikey", {
+          method: "POST",
+          body: JSON.stringify({
+            api_key: uuidv4(),
+
+            user_id: user?.id,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   return (
     <div>
       <section>
@@ -122,26 +149,15 @@ export default function Page() {
           <Listbox variant="flat" aria-label="Listbox menu with sections">
             <ListboxSection title="Actions" showDivider>
               {/* TODO: switch addnote icon to a key icon*/}
+
+              {/*POC*/}
               <ListboxItem
                 key="new"
                 description="Create a new API Key"
                 startContent={<AddNoteIcon className={iconClasses} />}
+                onClick={handleSubmit}
               >
                 New API Key
-              </ListboxItem>
-              <ListboxItem
-                key="copy"
-                description="Copy SDK generated API key"
-                startContent={<CopyDocumentIcon className={iconClasses} />}
-              >
-                Copy Stratus API key
-              </ListboxItem>
-              <ListboxItem
-                key="edit"
-                description="Allows you to edit the file"
-                startContent={<EditDocumentIcon className={iconClasses} />}
-              >
-                Edit API Key
               </ListboxItem>
             </ListboxSection>
             <ListboxSection title="Danger zone">
