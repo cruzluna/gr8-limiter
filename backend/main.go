@@ -12,12 +12,13 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/api/router"
+	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/internal/analytics"
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/internal/database"
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/services/ratelimit"
 )
 
 func main() {
-	ctx := context.Background()
+	// Get env variables
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalln("Error loading .env file: ", err)
@@ -25,15 +26,26 @@ func main() {
 
 	dbUrl := os.Getenv("DB_URL")
 	fmt.Println("DB URL: ", dbUrl)
-	err = database.Init(ctx, dbUrl)
+	posthogKey := os.Getenv("POSTHOG_KEY")
+	fmt.Println("POSTHOG KEY: ", posthogKey)
 
+	// Postgres
+	ctx := context.Background()
+	err = database.Init(ctx, dbUrl)
 	if err != nil {
-		log.Fatalln("Error: ", err)
+		log.Fatalln("Error Connecting to Postgres: ", err)
 	}
 
 	// redis
 	ratelimit.Init()
 	// cache.Init(10)
+
+	// posthog
+	err = analytics.Init(posthogKey)
+	if err != nil {
+		log.Fatalln("Error connecting to Posthog: ", err)
+	}
+	defer analytics.Client.Close()
 
 	app := fiber.New()
 
