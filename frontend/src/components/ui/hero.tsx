@@ -3,8 +3,10 @@
 import { Button, Link } from "@nextui-org/react";
 import { ChevronIcon } from "./icons";
 import { TypeAnimation } from "react-type-animation";
+import { useRouter } from "next/navigation";
 
 export default function Hero() {
+  const route = useRouter();
   return (
     <div className="text-center">
       <h1 className="text-gradient my-6 text-4xl md:text-7xl">
@@ -27,7 +29,14 @@ export default function Hero() {
           repeat={Infinity}
         />
       </h1>
-      <Button color="primary" variant="ghost" size="lg" href="/sign-up">
+      <Button
+        as={Link}
+        color="primary"
+        variant="ghost"
+        size="lg"
+        href="/sign-up"
+        style={{ position: "relative", zIndex: 1 }}
+      >
         Get started
         <ChevronIcon />
       </Button>
