@@ -1,5 +1,3 @@
-import StratusNavbar from "@/components/ui/navbar";
-
 export default function DashboardLayout({
   children, // will be a page or nested layout
 }: {
