@@ -101,7 +101,7 @@ export default function ApiKeyTable({ userId, apiKeyData }: ApiKeyTableProps) {
                     <div className="relative flex items-center gap-4">
                       <Tooltip content="Visible">
                         <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                          <EyeIcon onClick={() => toggleVisibility(item.id)} />
+                          <EyeIcon />
                         </span>
                       </Tooltip>
                       <Tooltip color="danger" content="Delete API key">
