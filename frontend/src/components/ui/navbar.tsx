@@ -1,4 +1,5 @@
 "use client";
+import { UserButton, SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import {
   Navbar,
   NavbarBrand,
@@ -38,15 +39,29 @@ export default function StratusNavbar() {
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
-          <Link href="/sign-in">Login</Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Button as={Link} color="primary" href="/sign-up" variant="flat">
-            Sign Up
-          </Button>
-        </NavbarItem>
+        <SignedOut>
+          <NavbarItem className="lg:flex">
+            <Link href="/sign-in">Login</Link>
+          </NavbarItem>
+          <NavbarItem>
+            <Button as={Link} color="primary" href="/sign-up" variant="flat">
+              Sign Up
+            </Button>
+          </NavbarItem>
+        </SignedOut>
+
+        <SignedIn>
+          <NavbarItem>
+            <Button as={Link} color="primary" href="/dashboard" variant="flat">
+              Dashboard
+            </Button>
+          </NavbarItem>
+        </SignedIn>
       </NavbarContent>
+      <SignedIn>
+        {/* Mount the UserButton component */}
+        <UserButton />
+      </SignedIn>
     </Navbar>
   );
 }
