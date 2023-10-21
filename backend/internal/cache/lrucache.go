@@ -51,8 +51,9 @@ func (lru *LRUCache[Value]) Get(key string) (Value, bool) {
 	elem, ok := lru.cache[key]
 	if ok {
 		lru.list.MoveToFront(elem)
+		return elem.Value.value, ok
 	}
-	return elem.Value.value, ok
+	return *new(Value), false
 }
 
 /*
