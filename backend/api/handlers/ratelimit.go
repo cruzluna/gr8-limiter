@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/internal/cache"
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/internal/database"
@@ -12,7 +13,7 @@ import (
 )
 
 func HandleRateLimit(c *fiber.Ctx) error {
-	id, ok := c.GetReqHeaders()["Api-Key"]
+	id, ok := c.GetReqHeaders()["X-Api-Key"]
 	if !ok {
 		return c.Status(fiber.StatusBadRequest).SendString("API key missing from header.")
 	}
@@ -21,6 +22,11 @@ func HandleRateLimit(c *fiber.Ctx) error {
 	_, ok = cache.ApiKeyCache.Get(id)
 	if !ok {
 		// 2. not in cache, check in db
+		_, err := uuid.Parse(id)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("API key is incorrect type.")
+		}
+
 		if inTable := database.Conn.IsApiKeyInTable(context.Background(), id); !inTable {
 			return c.Status(fiber.StatusBadRequest).SendString("API key is invalid.")
 		}

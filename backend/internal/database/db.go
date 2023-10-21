@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -29,7 +28,7 @@ TABLE api_keys (
 */
 
 type ApiTableRecord struct {
-	ApiKey uuid.UUID
+	ApiKey string
 	UserId string
 }
 
@@ -76,7 +75,7 @@ func (conn *Database) Insert(ctx context.Context, record ApiTableRecord) error {
 }
 
 // delete by api key for api_keys table
-func (conn *Database) DeleteByApiKey(ctx context.Context, apiKey uuid.UUID) error {
+func (conn *Database) DeleteByApiKey(ctx context.Context, apiKey string) error {
 	_, err := conn.DB.Exec(
 		ctx,
 		"DELETE FROM api_keys WHERE api_key = $1",
@@ -98,7 +97,7 @@ func (conn *Database) DeleteByUser(ctx context.Context, userId string) error {
 // delete by user id & api key for api_keys table
 func (conn *Database) DeleteByUserAndApiKey(
 	ctx context.Context,
-	apiKey uuid.UUID,
+	apiKey string,
 	userId string,
 ) error {
 	_, err := conn.DB.Exec(
@@ -111,7 +110,7 @@ func (conn *Database) DeleteByUserAndApiKey(
 }
 
 // determine if api key in api_keys table
-func (conn *Database) IsApiKeyInTable(ctx context.Context, apiKey uuid.UUID) bool {
+func (conn *Database) IsApiKeyInTable(ctx context.Context, apiKey string) bool {
 	var inTable bool
 	conn.DB.QueryRow(
 		ctx,
