@@ -13,7 +13,7 @@ import (
 )
 
 func HandleRateLimit(c *fiber.Ctx) error {
-	id, ok := c.GetReqHeaders()["Api-Key"]
+	id, ok := c.GetReqHeaders()["X-Api-Key"]
 	if !ok {
 		return c.Status(fiber.StatusBadRequest).SendString("API key missing from header.")
 	}
