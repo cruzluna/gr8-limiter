@@ -2,15 +2,22 @@ package database
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"net"
 	"net/url"
 	"testing"
 	"time"
 
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v5"
 	"github.com/ory/dockertest/v3"
 )
+
+//go:embed schema.sql
+var fs embed.FS
 
 func TestSetUpDb(t *testing.T) {
 	// tb.Helper()
@@ -98,5 +105,42 @@ func TestSetUpDb(t *testing.T) {
 		return db.Ping(ctx)
 	}); err != nil {
 		t.Fatalf("Couldn't ping DB: %s", err)
+	}
+
+	// migrate table in docker
+	m, err := migrate.New(
+		"file://migrations",
+		dsn.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := m.Up(); err != nil {
+		t.Fatal(err)
+	}
+
+	params := InsertApiKeyParams{
+		Apikey: "5fa877b4-88ba-47ec-ad8d-c62e2f46598f",
+		Userid: "dummyUserId",
+	}
+
+	// insert api key
+	qu := New(db)
+	err = qu.InsertApiKey(ctx, params)
+	if err != nil {
+		t.Fatal("unable to insert: ", err)
+	}
+
+	quTest := Database{
+		DB: db,
+	}
+
+	if !quTest.IsApiKeyInTable(ctx, params.Apikey) {
+		t.Fatal("unable to find: ", err)
+	}
+
+	err = qu.DeleteByApiKey(ctx, params.Apikey)
+
+	if err != nil {
+		t.Fatal("unable to delete: ", err)
 	}
 }
