@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
-	"embed"
 	"fmt"
 	"net"
 	"net/url"
+	"runtime"
 	"testing"
 	"time"
 
@@ -15,9 +15,6 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/ory/dockertest/v3"
 )
-
-//go:embed schema.sql
-var fs embed.FS
 
 func TestSetUpDb(t *testing.T) {
 	// tb.Helper()
@@ -60,25 +57,13 @@ func TestSetUpDb(t *testing.T) {
 
 	_ = resource.Expire(60)
 
-	// dsn.Host = resource.Container.NetworkSettings.IPAddress
-	// dsn.Host = fmt.Sprintf("%s:5432", resource.Container.NetworkSettings.IPAddress)
-	//
-	// // MacOS specific
-	// if runtime.GOOS == "darwin" {
-	// 	dsn.Host = net.JoinHostPort(resource.GetBoundIP("5432/tcp"), resource.GetPort("5432/tcp"))
-	// 	t.Log("runtime is darwin")
-	// }
+	// MacOS specific
+	if runtime.GOOS == "darwin" {
+		dsn.Host = net.JoinHostPort(resource.GetBoundIP("5432/tcp"), resource.GetPort("5432/tcp"))
+	}
 
-	dsn.Host = net.JoinHostPort(resource.GetBoundIP("5432/tcp"), resource.GetPort("5432/tcp"))
 	ctx := context.Background()
 
-	// var conn *pgx.Conn
-
-	// database := &Database{
-	// 	DB: conn,
-	// }
-
-	// err = Init(ctx, dsn.String())
 	var db *pgx.Conn
 	// gets around DB reconnect fail
 	// https://github.com/lib/pq/issues/835
@@ -94,10 +79,6 @@ func TestSetUpDb(t *testing.T) {
 	if db == nil {
 		t.Fatalf("Couldn't connect to database: %s", err)
 	}
-
-	// database := Database{
-	// 	DB: db,
-	// }
 
 	defer db.Close(ctx)
 
