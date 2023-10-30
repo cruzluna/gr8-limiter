@@ -64,12 +64,22 @@ func (conn *Database) CloseConn(ctx context.Context) error {
 	return conn.DB.Close(ctx)
 }
 
+// insert api key into api_keys table
 func (conn *Database) Insert(ctx context.Context, record ApiTableRecord) error {
 	_, err := conn.DB.Exec(
 		ctx,
 		"INSERT INTO api_keys (api_key, user_id) VALUES ($1,$2)",
 		record.ApiKey,
 		record.UserId,
+	)
+	return err
+}
+
+func (conn *Database) InsertEvent(ctx context.Context, apiKey string) error {
+	_, err := conn.DB.Exec(
+		ctx,
+		"INSERT INTO api_usage_event (time, api_key) VALUES (now(),$1)",
+		apiKey,
 	)
 	return err
 }
