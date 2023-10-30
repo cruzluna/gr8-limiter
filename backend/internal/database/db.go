@@ -21,15 +21,15 @@ type Database struct {
 /*
 TABLE api_keys (
     id SERIAL PRIMARY KEY,
-    api_key text NOT NULL UNIQUE,
-    user_id integer NOT NULL,
+    api_key uuid NOT NULL,
+    user_id text NOT NULL, // clerk user id
     created_at timestamp DEFAULT current_timestamp,
 )
 */
 
 type ApiTableRecord struct {
 	ApiKey string
-	UserId int32
+	UserId string
 }
 
 func Init(ctx context.Context, dataSource string) error {
@@ -64,6 +64,7 @@ func (conn *Database) CloseConn(ctx context.Context) error {
 	return conn.DB.Close(ctx)
 }
 
+// insert api key into api_keys table
 func (conn *Database) Insert(ctx context.Context, record ApiTableRecord) error {
 	_, err := conn.DB.Exec(
 		ctx,
@@ -83,6 +84,7 @@ func (conn *Database) InsertEvent(ctx context.Context, apiKey string) error {
 	return err
 }
 
+// delete by api key for api_keys table
 func (conn *Database) DeleteByApiKey(ctx context.Context, apiKey string) error {
 	_, err := conn.DB.Exec(
 		ctx,
@@ -92,7 +94,8 @@ func (conn *Database) DeleteByApiKey(ctx context.Context, apiKey string) error {
 	return err
 }
 
-func (conn *Database) DeleteByUser(ctx context.Context, userId int32) error {
+// delete by user id for api_keys table
+func (conn *Database) DeleteByUser(ctx context.Context, userId string) error {
 	_, err := conn.DB.Exec(
 		ctx,
 		"DELETE FROM api_keys WHERE user_id = $1",
@@ -101,10 +104,11 @@ func (conn *Database) DeleteByUser(ctx context.Context, userId int32) error {
 	return err
 }
 
+// delete by user id & api key for api_keys table
 func (conn *Database) DeleteByUserAndApiKey(
 	ctx context.Context,
 	apiKey string,
-	userId int32,
+	userId string,
 ) error {
 	_, err := conn.DB.Exec(
 		ctx,
@@ -115,6 +119,7 @@ func (conn *Database) DeleteByUserAndApiKey(
 	return err
 }
 
+// determine if api key in api_keys table
 func (conn *Database) IsApiKeyInTable(ctx context.Context, apiKey string) bool {
 	var inTable bool
 	conn.DB.QueryRow(

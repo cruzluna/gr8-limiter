@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Providers } from "./provider";
 import { ClerkProvider } from "@clerk/nextjs";
+import StratusNavbar from "@/components/ui/navbar";
 
 export const metadata: Metadata = {
   title: "stratus",
@@ -17,7 +18,12 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className="dark">
         <body>
-          <Providers>{children}</Providers>
+          <Providers>
+            <section>
+              <StratusNavbar />
+            </section>
+            {children}
+          </Providers>
         </body>
       </html>
     </ClerkProvider>

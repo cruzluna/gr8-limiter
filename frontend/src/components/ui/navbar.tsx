@@ -1,4 +1,5 @@
 "use client";
+import { UserButton, SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import {
   Navbar,
   NavbarBrand,
@@ -7,12 +8,18 @@ import {
   Link,
   Button,
 } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 export default function StratusNavbar() {
+  const router = useRouter();
   return (
     <Navbar>
-      <NavbarBrand>
-        <p className="font-light text-xl text-inherit">stratus</p>
+      <NavbarBrand
+        onClick={() => {
+          router.push("/");
+        }}
+      >
+        <p className="font-light text-xl text-inherit">🌩️ stratus</p>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
@@ -22,7 +29,7 @@ export default function StratusNavbar() {
         </NavbarItem>
         <NavbarItem isActive>
           <Link href="#" aria-current="page">
-            Customers
+            Docs
           </Link>
         </NavbarItem>
         <NavbarItem>
@@ -32,15 +39,29 @@ export default function StratusNavbar() {
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
-          <Link href="#">Login</Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Button as={Link} color="primary" href="#" variant="flat">
-            Sign Up
-          </Button>
-        </NavbarItem>
+        <SignedOut>
+          <NavbarItem className="lg:flex">
+            <Link href="/sign-in">Login</Link>
+          </NavbarItem>
+          <NavbarItem>
+            <Button as={Link} color="primary" href="/sign-up" variant="flat">
+              Sign Up
+            </Button>
+          </NavbarItem>
+        </SignedOut>
+
+        <SignedIn>
+          <NavbarItem>
+            <Button as={Link} color="primary" href="/dashboard" variant="flat">
+              Dashboard
+            </Button>
+          </NavbarItem>
+        </SignedIn>
       </NavbarContent>
+      <SignedIn>
+        {/* Mount the UserButton component */}
+        <UserButton />
+      </SignedIn>
     </Navbar>
   );
 }

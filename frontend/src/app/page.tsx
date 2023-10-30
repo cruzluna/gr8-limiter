@@ -4,9 +4,6 @@ import StratusNavbar from "@/components/ui/navbar";
 export default function Home() {
   return (
     <div>
-      <section>
-        <StratusNavbar />
-      </section>
       <section className="overflow-hidden pb-[16.4rem] md:pb-[25.6rem] text-white">
         <div className="pt-[6.4rem]">
           <Hero />

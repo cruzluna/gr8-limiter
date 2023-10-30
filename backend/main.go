@@ -13,6 +13,7 @@ import (
 
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/api/router"
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/internal/analytics"
+	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/internal/cache"
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/internal/database"
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/services/ratelimit"
 )
@@ -38,7 +39,9 @@ func main() {
 
 	// redis
 	ratelimit.Init()
-	// cache.Init(10)
+
+	// API key cache
+	cache.InitApiKeyCache(512)
 
 	// posthog
 	err = analytics.Init(posthogKey)
