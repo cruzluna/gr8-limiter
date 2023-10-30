@@ -4,7 +4,6 @@ import ApiKeyTable from "@/components/ui/apikeytable";
 import { currentUser } from "@clerk/nextjs";
 import { sql } from "../../../../neon/neonclient";
 import { UUID } from "crypto";
-import { Card, CardHeader } from "@nextui-org/react";
 import DashboardTiles from "@/components/ui/dashboardtiles";
 
 export type ApiKeyPayload = {
@@ -19,9 +18,9 @@ export default async function Page() {
     throw new Error("Clerk failed to authenticate.");
   }
 
-  const res: ApiKeyPayload[] = await sql(
+  const res: ApiKeyPayload[] = (await sql(
     `SELECT id, created_at, api_key FROM api_keys WHERE user_id= '${clerkUser.id}';`,
-  );
+  )) as ApiKeyPayload[];
 
   // POC
   // const handleSubmit = async () => {

@@ -4,7 +4,7 @@ export const ChevronIcon = () => (
   </svg>
 );
 
-export const AddNoteIcon = (props) => (
+export const AddNoteIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -27,7 +27,7 @@ export const AddNoteIcon = (props) => (
   </svg>
 );
 
-export const CopyDocumentIcon = (props) => (
+export const CopyDocumentIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -53,7 +53,7 @@ export const CopyDocumentIcon = (props) => (
     />
   </svg>
 );
-export const EditDocumentIcon = (props) => (
+export const EditDocumentIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -76,7 +76,7 @@ export const EditDocumentIcon = (props) => (
   </svg>
 );
 
-export const DeleteDocumentIcon = (props) => (
+export const DeleteDocumentIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -105,7 +105,7 @@ export const DeleteDocumentIcon = (props) => (
   </svg>
 );
 
-export const EyeIcon = (props) => (
+export const EyeIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -133,7 +133,7 @@ export const EyeIcon = (props) => (
   </svg>
 );
 
-export const EditIcon = (props) => (
+export const EditIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -171,7 +171,7 @@ export const EditIcon = (props) => (
   </svg>
 );
 
-export const DeleteIcon = (props) => (
+export const DeleteIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -220,7 +220,7 @@ export const DeleteIcon = (props) => (
   </svg>
 );
 
-export const EyeSlashFilledIcon = (props) => (
+export const EyeSlashFilledIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
