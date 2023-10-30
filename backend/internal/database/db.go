@@ -64,6 +64,7 @@ func (conn *Database) CloseConn(ctx context.Context) error {
 	return conn.DB.Close(ctx)
 }
 
+// insert api key into api_keys table
 func (conn *Database) Insert(ctx context.Context, record ApiTableRecord) error {
 	_, err := conn.DB.Exec(
 		ctx,
