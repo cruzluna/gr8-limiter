@@ -4,7 +4,7 @@ export const ChevronIcon = () => (
   </svg>
 );
 
-export const AddNoteIcon = (props) => (
+export const AddNoteIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -27,7 +27,7 @@ export const AddNoteIcon = (props) => (
   </svg>
 );
 
-export const CopyDocumentIcon = (props) => (
+export const CopyDocumentIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -53,7 +53,7 @@ export const CopyDocumentIcon = (props) => (
     />
   </svg>
 );
-export const EditDocumentIcon = (props) => (
+export const EditDocumentIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -76,7 +76,7 @@ export const EditDocumentIcon = (props) => (
   </svg>
 );
 
-export const DeleteDocumentIcon = (props) => (
+export const DeleteDocumentIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -105,7 +105,7 @@ export const DeleteDocumentIcon = (props) => (
   </svg>
 );
 
-export const EyeIcon = (props) => (
+export const EyeIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -133,7 +133,7 @@ export const EyeIcon = (props) => (
   </svg>
 );
 
-export const EditIcon = (props) => (
+export const EditIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -171,7 +171,7 @@ export const EditIcon = (props) => (
   </svg>
 );
 
-export const DeleteIcon = (props) => (
+export const DeleteIcon = (props: any) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -216,6 +216,62 @@ export const DeleteIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={1.5}
+    />
+  </svg>
+);
+
+export const EyeSlashFilledIcon = (props: any) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    focusable="false"
+    height="1em"
+    role="presentation"
+    viewBox="0 0 24 24"
+    width="1em"
+    {...props}
+  >
+    <path
+      d="M21.2714 9.17834C20.9814 8.71834 20.6714 8.28834 20.3514 7.88834C19.9814 7.41834 19.2814 7.37834 18.8614 7.79834L15.8614 10.7983C16.0814 11.4583 16.1214 12.2183 15.9214 13.0083C15.5714 14.4183 14.4314 15.5583 13.0214 15.9083C12.2314 16.1083 11.4714 16.0683 10.8114 15.8483C10.8114 15.8483 9.38141 17.2783 8.35141 18.3083C7.85141 18.8083 8.01141 19.6883 8.68141 19.9483C9.75141 20.3583 10.8614 20.5683 12.0014 20.5683C13.7814 20.5683 15.5114 20.0483 17.0914 19.0783C18.7014 18.0783 20.1514 16.6083 21.3214 14.7383C22.2714 13.2283 22.2214 10.6883 21.2714 9.17834Z"
+      fill="currentColor"
+    />
+    <path
+      d="M14.0206 9.98062L9.98062 14.0206C9.47062 13.5006 9.14062 12.7806 9.14062 12.0006C9.14062 10.4306 10.4206 9.14062 12.0006 9.14062C12.7806 9.14062 13.5006 9.47062 14.0206 9.98062Z"
+      fill="currentColor"
+    />
+    <path
+      d="M18.25 5.74969L14.86 9.13969C14.13 8.39969 13.12 7.95969 12 7.95969C9.76 7.95969 7.96 9.76969 7.96 11.9997C7.96 13.1197 8.41 14.1297 9.14 14.8597L5.76 18.2497H5.75C4.64 17.3497 3.62 16.1997 2.75 14.8397C1.75 13.2697 1.75 10.7197 2.75 9.14969C3.91 7.32969 5.33 5.89969 6.91 4.91969C8.49 3.95969 10.22 3.42969 12 3.42969C14.23 3.42969 16.39 4.24969 18.25 5.74969Z"
+      fill="currentColor"
+    />
+    <path
+      d="M14.8581 11.9981C14.8581 13.5681 13.5781 14.8581 11.9981 14.8581C11.9381 14.8581 11.8881 14.8581 11.8281 14.8381L14.8381 11.8281C14.8581 11.8881 14.8581 11.9381 14.8581 11.9981Z"
+      fill="currentColor"
+    />
+    <path
+      d="M21.7689 2.22891C21.4689 1.92891 20.9789 1.92891 20.6789 2.22891L2.22891 20.6889C1.92891 20.9889 1.92891 21.4789 2.22891 21.7789C2.37891 21.9189 2.56891 21.9989 2.76891 21.9989C2.96891 21.9989 3.15891 21.9189 3.30891 21.7689L21.7689 3.30891C22.0789 3.00891 22.0789 2.52891 21.7689 2.22891Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+export const ClipboardIcon = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    aria-hidden="true"
+    focusable="false"
+    height="1em"
+    role="presentation"
+    width="1em"
+    {...props}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"
     />
   </svg>
 );
