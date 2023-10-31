@@ -1,5 +1,3 @@
-// import { useUser } from "@clerk/nextjs";
-
 import ApiKeyTable from "@/components/ui/apikeytable";
 import { currentUser } from "@clerk/nextjs";
 import { sql } from "../../../../neon/neonclient";
@@ -47,7 +45,7 @@ export default async function Page() {
 
   return (
     <div>
-      <DashboardTiles />
+      <DashboardTiles username={clerkUser.username!} />
       <ApiKeyTable userId={clerkUser.id} apiKeyData={res} />
     </div>
   );
