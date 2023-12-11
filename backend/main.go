@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -19,11 +20,17 @@ import (
 )
 
 func main() {
-	// Get env variables
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalln("Error loading .env file: ", err)
+	env := flag.String("env", "local", "Environment flag")
+	flag.Parse()
+
+	// go run main.go -env=local|prod
+	if *env == "local" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatalln("Error loading .env file: ", err)
+		}
 	}
+	fmt.Println("STAGE: ", *env)
 
 	dbUrl := os.Getenv("DB_URL")
 	fmt.Println("DB URL: ", dbUrl)
@@ -32,13 +39,14 @@ func main() {
 
 	// Postgres
 	ctx := context.Background()
-	err = database.Init(ctx, dbUrl)
+	err := database.Init(ctx, dbUrl)
 	if err != nil {
 		log.Fatalln("Error Connecting to Postgres: ", err)
 	}
 
 	// redis
-	ratelimit.Init()
+	redisUrl := os.Getenv("REDIS_URL")
+	ratelimit.Init(redisUrl)
 
 	// API key cache
 	cache.InitApiKeyCache(512)
@@ -60,5 +68,12 @@ func main() {
 
 	router.PublicRoutes(app)
 
-	app.Listen(":3000")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "10000"
+	}
+
+	if err = app.Listen(":" + port); err != nil {
+		log.Fatalln("Unable to start server. ", err)
+	}
 }
