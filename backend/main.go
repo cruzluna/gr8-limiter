@@ -30,6 +30,7 @@ func main() {
 			log.Fatalln("Error loading .env file: ", err)
 		}
 	}
+	fmt.Println("STAGE: ", *env)
 
 	dbUrl := os.Getenv("DB_URL")
 	fmt.Println("DB URL: ", dbUrl)
