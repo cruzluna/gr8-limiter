@@ -37,13 +37,12 @@ func WithLimit(limit int64) func(*RateConfig) error {
 	}
 }
 
-func Init() {
+func Init(address string) error {
+	opts, err := redis.ParseURL(address)
 	once.Do(func() {
-		rdb = redis.NewClient(&redis.Options{
-			Addr: "localhost:6379",
-			DB:   0,
-		})
+		rdb = redis.NewClient(opts)
 	})
+	return err
 }
 
 func WithWindowSize(windowSize int64) func(*RateConfig) error {
