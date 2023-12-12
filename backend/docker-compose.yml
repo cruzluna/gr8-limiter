@@ -1,0 +1,12 @@
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_URL=${DB_URL}
+      - POSTHOG_KEY=${POSTHOG_KEY}
+      - REDIS_URL=${REDIS_URL}
+      - PORT=${PORT}
+  redis:
+    image: "redis:alpine"
