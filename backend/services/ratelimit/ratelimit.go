@@ -39,6 +39,9 @@ func WithLimit(limit int64) func(*RateConfig) error {
 
 func Init(address string) error {
 	opts, err := redis.ParseURL(address)
+	if err != nil {
+		return err
+	}
 	once.Do(func() {
 		rdb = redis.NewClient(opts)
 	})

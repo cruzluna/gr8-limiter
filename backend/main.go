@@ -25,7 +25,7 @@ func main() {
 
 	// go run main.go -env=local|prod
 	if *env == "local" {
-		err := godotenv.Load()
+		err := godotenv.Load("dev.env")
 		if err != nil {
 			log.Fatalln("Error loading .env file: ", err)
 		}
@@ -46,7 +46,10 @@ func main() {
 
 	// redis
 	redisUrl := os.Getenv("REDIS_URL")
-	ratelimit.Init(redisUrl)
+	err = ratelimit.Init(redisUrl)
+	if err != nil {
+		log.Fatalln("Error connecting to Redis: ", err)
+	}
 
 	// API key cache
 	cache.InitApiKeyCache(512)
