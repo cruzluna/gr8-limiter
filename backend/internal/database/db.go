@@ -124,7 +124,7 @@ func (conn *Database) IsApiKeyInTable(ctx context.Context, apiKey string) bool {
 	var inTable bool
 	conn.DB.QueryRow(
 		ctx,
-		"SELECT EXISTS(SELECT api_key FROM api_keys WHERE api_key= $1)",
+		"SELECT EXISTS(SELECT 1 FROM api_keys WHERE api_key= $1)",
 		apiKey,
 	).Scan(&inTable)
 
