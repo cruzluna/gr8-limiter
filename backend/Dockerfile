@@ -1,5 +1,5 @@
-# --platform=linux/amd64 
-FROM  --platform=linux/amd64 golang:1.20-alpine
+# --platform=linux/amd64 required for render
+FROM --platform=linux/amd64 golang:1.20-alpine
 
 WORKDIR /app
 
@@ -11,6 +11,10 @@ COPY . .
 
 RUN go build -tags netgo -ldflags '-s -w' -o app
 
-EXPOSE 10000
-CMD [ "./app", "-env=local" ]
+# Install redis  
+RUN apk --update add redis
+
+EXPOSE 6379:6379
+EXPOSE 3000/tcp
+CMD redis-server --daemonize yes && ./app -env=local
 
