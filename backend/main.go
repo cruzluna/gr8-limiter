@@ -46,6 +46,7 @@ func main() {
 
 	// redis
 	redisUrl := os.Getenv("REDIS_URL")
+	fmt.Println("REDIS Addr: ", redisUrl)
 	err = ratelimit.Init(redisUrl)
 	if err != nil {
 		log.Fatalln("Error connecting to Redis: ", err)
