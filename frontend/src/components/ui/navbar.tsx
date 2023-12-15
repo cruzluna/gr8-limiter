@@ -28,7 +28,11 @@ export default function StratusNavbar() {
           </Link>
         </NavbarItem>
         <NavbarItem isActive>
-          <Link href="#" aria-current="page">
+          <Link
+            href="https://stratus-docs-production.up.railway.app/"
+            target="_blank"
+            aria-current="page"
+          >
             Docs
           </Link>
         </NavbarItem>
