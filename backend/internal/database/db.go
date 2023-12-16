@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"log"
 	"sync"
 
 	"github.com/jackc/pgx/v5"
@@ -120,13 +121,17 @@ func (conn *Database) DeleteByUserAndApiKey(
 }
 
 // determine if api key in api_keys table
-func (conn *Database) IsApiKeyInTable(ctx context.Context, apiKey string) bool {
+func (conn *Database) IsApiKeyInTable(ctx context.Context, apiKey string) (bool, error) {
 	var inTable bool
-	conn.DB.QueryRow(
+	err := conn.DB.QueryRow(
 		ctx,
 		"SELECT EXISTS(SELECT 1 FROM api_keys WHERE api_key= $1)",
 		apiKey,
 	).Scan(&inTable)
-
-	return inTable
+	// TODO: Still buggy...
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+	return inTable, err
 }

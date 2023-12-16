@@ -27,7 +27,11 @@ func HandleRateLimit(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusBadRequest).SendString("API key is incorrect type.")
 		}
 
-		if inTable := database.Conn.IsApiKeyInTable(context.Background(), id); !inTable {
+		inTable, err := database.Conn.IsApiKeyInTable(context.Background(), id)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("API key database error.")
+		}
+		if !inTable {
 			return c.Status(fiber.StatusBadRequest).SendString("API key is invalid.")
 		}
 		// inTable, add to cache
