@@ -29,7 +29,7 @@ export default function Hero() {
           repeat={Infinity}
         />
       </h1>
-      <Snippet className="mr-4">npm i @stratus-dev/sdk</Snippet>
+      <Snippet className="m-4">npm i @stratus-dev/sdk</Snippet>
       <Button
         as={Link}
         color="primary"
