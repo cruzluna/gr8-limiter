@@ -17,31 +17,8 @@ export default async function Page() {
   }
 
   const res: ApiKeyPayload[] = (await sql(
-    `SELECT id, created_at, api_key FROM api_keys WHERE user_id= '${clerkUser.id}';`,
+    `SELECT id, created_at, api_key FROM api_keys WHERE user_id= '${clerkUser.id}';`
   )) as ApiKeyPayload[];
-
-  // POC
-  // const handleSubmit = async () => {
-  //   console.log("in here");
-  //
-  //   if (isLoaded) {
-  //     try {
-  //       await fetch("/api/apikey", {
-  //         method: "POST",
-  //         body: JSON.stringify({
-  //           api_key: uuidv4(),
-  //
-  //           user_id: user?.id,
-  //         }),
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       });
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   }
-  // };
 
   return (
     <div>

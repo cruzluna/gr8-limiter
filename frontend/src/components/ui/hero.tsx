@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Link } from "@nextui-org/react";
+import { Button, Link, Snippet } from "@nextui-org/react";
 import { ChevronIcon } from "./icons";
 import { TypeAnimation } from "react-type-animation";
 import { useRouter } from "next/navigation";
@@ -29,6 +29,7 @@ export default function Hero() {
           repeat={Infinity}
         />
       </h1>
+      <Snippet className="mr-4">npm i @stratus-dev/sdk</Snippet>
       <Button
         as={Link}
         color="primary"

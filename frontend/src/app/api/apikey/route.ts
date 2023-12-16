@@ -1,10 +1,15 @@
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "../../../../neon/neonclient";
-
+import { Client } from "@stratus-dev/sdk";
 type countItem = {
   count: string;
 };
+
+const client = new Client({
+  apiKey: process.env.STRATUS_TOKEN!,
+  apiURL: "https://gr8-limit-docker.onrender.com/api/v1/ratelimit",
+});
 
 export async function POST(req: NextRequest) {
   const { userId } = getAuth(req);
@@ -12,28 +17,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Not authenicated" }, { status: 401 });
   }
 
-  // throw Error();
   // TODO: check data types
-  // let count: number = 0
   let countPayload: countItem[];
 
   const data = await req.json();
   try {
+    const rateLimited = await client.rateLimit();
+    if (rateLimited) {
+      return NextResponse.json(
+        { error: "Rate limited- Too many requests" },
+        { status: 429 }
+      );
+    }
+
     countPayload = (await sql(
       "SELECT COUNT(api_key) FROM api_keys WHERE user_id = $1;",
-      [userId],
+      [userId]
     )) as countItem[];
-  } catch (error) {
-    console.error("Error validating api key count: ", error);
-    return NextResponse.json({ message: error }, { status: 500 });
-  }
 
-  if (Number(countPayload[0]?.count) >= 3) {
-    console.log("IN HERE");
-    return NextResponse.json(
-      { message: "Unable to generate an API key. Limited to 3." },
-      { status: 429 },
-    );
+    if (Number(countPayload[0]?.count) >= 3) {
+      return NextResponse.json(
+        { message: "Unable to generate an API key. Limited to 3." },
+        { status: 429 }
+      );
+    }
+  } catch (error) {
+    // TODO: fix status. Not always 404
+    return NextResponse.json({ message: error }, { status: 404 });
   }
 
   try {

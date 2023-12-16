@@ -57,11 +57,16 @@ export default function ApiKeyTable({ userId, apiKeyData }: ApiKeyTableProps) {
     })
       .then((res) => {
         if (res.status == 429) {
-          toast.error("Unable to generate an API key. Limited to 3.");
+          // rate limited or too many api keys already
+          res.text().then((message) => {
+            toast.error(message);
+          });
         } else if (res.status == 200) {
           toast.success("Successfully generated API key.");
         } else {
-          toast.error("Unable to generate an API Key.");
+          res.text().then((message) => {
+            toast.error(message);
+          });
         }
       })
       .catch((error) => {
