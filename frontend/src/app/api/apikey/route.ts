@@ -1,7 +1,7 @@
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "../../../../neon/neonclient";
-import { Client } from "@stratus-dev/sdk";
+import { Client, StratusError } from "@stratus-dev/sdk";
 type countItem = {
   count: string;
 };
@@ -41,9 +41,15 @@ export async function POST(req: NextRequest) {
         { status: 429 }
       );
     }
-  } catch (error) {
+  } catch (error: any) {
     // TODO: fix status. Not always 404
-    return NextResponse.json({ message: error }, { status: 404 });
+    if (error instanceof StratusError) {
+      return NextResponse.json({ error: error.cause }, { status: error.code });
+    }
+    return NextResponse.json(
+      { message: error.message || "Internal Server Error" },
+      { status: 500 }
+    );
   }
 
   try {
