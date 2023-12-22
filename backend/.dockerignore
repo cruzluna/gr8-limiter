@@ -1,4 +1,5 @@
 .sqllsrc.json
 .git
 .env
+./internal/docs/*
 
