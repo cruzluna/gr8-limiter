@@ -119,12 +119,19 @@ func TestDatabase(t *testing.T) {
 	err := Conn.Insert(ctx, testRecord)
 	assert.Nil(t, err, "Insert Api Key")
 
-	assert.Equal(t, true, Conn.IsApiKeyInTable(ctx, testRecord.ApiKey), "Should find Api Key")
+	assert.True(t, func() bool {
+		result, _ := Conn.IsApiKeyInTable(ctx, testRecord.ApiKey)
+		return result
+	}(), "API key should be found in the table")
+	// assert.Equal(t, true, Conn.IsApiKeyInTable(ctx, testRecord.ApiKey), "Should find Api Key")
 
 	err = Conn.DeleteByApiKey(ctx, "5fa877b4-88ba-47ec-ad8d-c62e2f46598f")
 	assert.Nil(t, err, "Delete Api Key")
 
-	assert.Equal(t, false, Conn.IsApiKeyInTable(ctx, testRecord.ApiKey), "Should NOT find Api Key")
+	assert.False(t, func() bool {
+		result, _ := Conn.IsApiKeyInTable(ctx, testRecord.ApiKey)
+		return result
+	}(), "Should NOT find Api Key")
 
 	err = Conn.DeleteByUser(ctx, testRecord.UserId)
 	assert.Nil(t, err, "Attempting to delete a deleted record. Delete should always give nil.")
@@ -133,7 +140,12 @@ func TestDatabase(t *testing.T) {
 	if err != nil {
 		t.Fatal("Unable to insert into database.")
 	}
-	assert.Equal(t, true, Conn.IsApiKeyInTable(ctx, testRecord.ApiKey), "Should find Api Key")
+
+	assert.True(t, func() bool {
+		result, _ := Conn.IsApiKeyInTable(ctx, testRecord.ApiKey)
+		return result
+	}(), "API key should be found in the table")
+
 	err = Conn.DeleteByUserAndApiKey(ctx, testRecord.ApiKey, testRecord.UserId)
 	assert.Nil(t, err, "Delete User and Api Key")
 }
