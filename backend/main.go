@@ -43,6 +43,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("Error Connecting to Postgres: ", err)
 	}
+	defer database.Conn.DB.Close()
 
 	// redis
 	redisUrl := os.Getenv("REDIS_URL")

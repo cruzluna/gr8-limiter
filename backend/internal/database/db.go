@@ -6,7 +6,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // singleton db connection
@@ -16,7 +16,7 @@ var (
 )
 
 type Database struct {
-	DB *pgx.Conn
+	DB *pgxpool.Pool
 }
 
 /*
@@ -42,14 +42,14 @@ func Init(ctx context.Context, dataSource string) error {
 }
 
 func StartDatabase(ctx context.Context, dataSource string) (*Database, error) {
-	conn, err := pgx.Connect(ctx, dataSource)
+	pool, err := pgxpool.New(ctx, dataSource)
 	if err != nil {
-		fmt.Println("Couldn't start db.\n", err)
+		fmt.Println("Couldn't create connection pool.\n", err)
 		return nil, err
 	}
 
 	database := &Database{
-		DB: conn,
+		DB: pool,
 	}
 
 	err = database.DB.Ping(ctx)
@@ -61,8 +61,9 @@ func StartDatabase(ctx context.Context, dataSource string) (*Database, error) {
 	return database, nil
 }
 
-func (conn *Database) CloseConn(ctx context.Context) error {
-	return conn.DB.Close(ctx)
+func (conn *Database) CloseConn() {
+	conn.DB.Close()
+	// return conn.DB.Close()
 }
 
 // insert api key into api_keys table
