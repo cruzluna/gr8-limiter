@@ -7,6 +7,9 @@ import {
   NavbarItem,
   Link,
   Button,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
 } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 
@@ -22,11 +25,24 @@ export default function StratusNavbar() {
         <p className="font-light text-xl text-inherit">🌩️ stratus</p>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarItem>
-          <Link color="foreground" href="#">
-            Features
-          </Link>
-        </NavbarItem>
+        <Popover placement="bottom" showArrow={true} color={"foreground"}>
+          <PopoverTrigger>
+            {/* 
+// @ts-ignore */}
+            <Button color={"foreground"}>
+              <NavbarItem>Features</NavbarItem>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className="px-1 py-2">
+              <div className="text-small font-bold">
+                It&apos;s in the works.
+              </div>
+              <div className="text-tiny">Refer to the docs for now.</div>
+            </div>
+          </PopoverContent>
+        </Popover>
+
         <NavbarItem isActive>
           <Link
             href="https://stratus-docs-production.up.railway.app/"
@@ -37,9 +53,23 @@ export default function StratusNavbar() {
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" href="#">
-            Integrations
-          </Link>
+          <Popover placement="bottom" showArrow={true} color={"foreground"}>
+            <PopoverTrigger>
+              {/* 
+// @ts-ignore */}
+              <Button color={"foreground"}>
+                <NavbarItem>Integrations</NavbarItem>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className="px-1 py-2">
+                <div className="text-small font-bold">
+                  It&apos;s in the works.
+                </div>
+                <div className="text-tiny">Refer to the docs for now.</div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
