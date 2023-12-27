@@ -19,15 +19,15 @@ func HandleRateLimit(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("API key missing from header.")
 	}
 
-	// 1. check if api key is uuid
-	_, err := uuid.Parse(id)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString("API key is incorrect type.")
-	}
-
-	// 2. check if api key in cache
+	// 1. check if api key in cache
 	_, ok = cache.ApiKeyCache.Get(id)
 	if !ok {
+		// 2. check if api key is uuid
+		_, err := uuid.Parse(id)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("API key is incorrect type.")
+		}
+
 		// 3. not in cache, check in db
 		// Slow point...how to speed it up?
 		inTable, err := database.Conn.IsApiKeyInTable(context.Background(), id)
