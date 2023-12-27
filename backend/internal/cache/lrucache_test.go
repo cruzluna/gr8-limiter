@@ -2,54 +2,53 @@ package cache
 
 import (
 	"fmt"
-	"sync"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-var s = []string{
-	"string0", "string1",
-	"string2", "string3",
-	"string4", "string5",
-	"string0", "string1",
-	"string2", "string3",
-	"string4", "string5",
-}
-
-func incomingString() <-chan string {
-	ch := make(chan string)
-	go func() {
-		for _, st := range s {
-			ch <- st
-		}
-		close(ch)
-	}()
-	return ch
-}
-
 func TestCacheConcurrent(t *testing.T) {
-	lru := New[string](len(s))
-
-	var wg sync.WaitGroup
-	for val := range incomingString() {
-		wg.Add(1)
-
-		go func(str string) {
-			defer wg.Done()
-			start := time.Now()
-
-			// add to cache
-			value, ok := lru.Get(str)
-			if !ok {
-				lru.Add(str, "")
-			}
-
-			fmt.Printf("%s, %s, %d string\n", str, time.Since(start), len(value))
-		}(val)
+	strs := []string{
+		"string0", "string1",
+		"string2", "string3",
+		"string4", "string5",
+		"string0", "string1",
+		"string2", "string3",
+		"string4", "string5",
 	}
-	wg.Wait()
+	lru := New[string](len(strs))
+
+	ch := make(chan string)
+	done := make(chan string)
+	go func() {
+		defer close(done)
+		for _, st := range strs {
+			ch <- st
+			fmt.Println("FEED ME: ", st)
+		}
+	}()
+
+	for {
+		select {
+		case s := <-ch:
+			// do work
+			go func(str string) {
+				// defer wg.Done()
+				start := time.Now()
+
+				// add to cache
+				value, ok := lru.Get(str)
+				if !ok {
+					lru.Add(str, "")
+				}
+				fmt.Printf("%s, %s, %d string\n", str, time.Since(start), len(value))
+			}(s)
+		case <-done:
+			return
+
+		}
+	}
 }
 
 func TestCreateLRUCache(t *testing.T) {
