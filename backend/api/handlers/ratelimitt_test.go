@@ -11,7 +11,7 @@ import (
 	"github.com/KnlnKS/gr8-limiter/services/gr8-limiter/internal/cache"
 )
 
-func TestRateLimitHandler(t *testing.T) {
+func TestRateLimitHandlerBasic(t *testing.T) {
 	app := fiber.New()
 	api := app.Group("/api").Group("/v1")
 
@@ -35,4 +35,5 @@ func TestRateLimitHandler(t *testing.T) {
 	assert.Equal(t, "API key is incorrect type.", string(body), "Incorrect API key header format")
 
 	// TODO: mock database
+	// TODO: Concurrent http requests
 }

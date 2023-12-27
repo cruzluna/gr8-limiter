@@ -16,8 +16,10 @@ type LRUCache[Value any] struct {
 	cache    map[string]*list.Element[kv[Value]]
 	capacity int
 	list     *list.List[kv[Value]]
+	lock     sync.RWMutex
 }
 
+// Global Variables
 var (
 	ApiKeyCache *LRUCache[bool]
 	once        sync.Once
@@ -48,11 +50,14 @@ func New[Value any](capacity int) *LRUCache[Value] {
 returns the value associated with the given key.
 */
 func (lru *LRUCache[Value]) Get(key string) (Value, bool) {
+	lru.lock.Lock()
+	defer lru.lock.Unlock()
 	elem, ok := lru.cache[key]
 	if ok {
 		lru.list.MoveToFront(elem)
 		return elem.Value.value, ok
 	}
+	// *new(T) idiom -> zero value for a generic
 	return *new(Value), false
 }
 
@@ -60,7 +65,10 @@ func (lru *LRUCache[Value]) Get(key string) (Value, bool) {
 adds the given key to the cache.
 */
 func (lru *LRUCache[Value]) Add(key string, value Value) {
-	if _, ok := lru.cache[key]; ok {
+	lru.lock.Lock()
+	defer lru.lock.Unlock()
+	if elem, ok := lru.cache[key]; ok {
+		lru.list.MoveToFront(elem)
 		return
 	}
 
@@ -78,6 +86,8 @@ func (lru *LRUCache[Value]) Add(key string, value Value) {
 removes the given key from the cache.
 */
 func (lru *LRUCache[Value]) Remove(key string) error {
+	lru.lock.Lock()
+	defer lru.lock.Unlock()
 	if elem, ok := lru.cache[key]; ok {
 		lru.list.Remove(elem)
 		delete(lru.cache, key)
