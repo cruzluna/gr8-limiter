@@ -25,7 +25,6 @@ func TestCacheConcurrent(t *testing.T) {
 		defer close(done)
 		for _, st := range strs {
 			ch <- st
-			fmt.Println("FEED ME: ", st)
 		}
 	}()
 
