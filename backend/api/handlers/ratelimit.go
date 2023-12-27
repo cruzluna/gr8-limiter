@@ -35,7 +35,9 @@ func HandleRateLimit(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusBadRequest).SendString("API key is invalid.")
 		}
 		// inTable, add to cache
-		cache.ApiKeyCache.Add(id, true)
+		go func() {
+			cache.ApiKeyCache.Add(id, true)
+		}()
 	}
 
 	limitString := c.Get("limit")

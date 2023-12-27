@@ -35,4 +35,5 @@ func TestRateLimitHandler(t *testing.T) {
 	assert.Equal(t, "API key is incorrect type.", string(body), "Incorrect API key header format")
 
 	// TODO: mock database
+	// TODO: Concurrent http requests
 }
