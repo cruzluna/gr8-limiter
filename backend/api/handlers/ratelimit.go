@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"strconv"
+	"sync"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -18,15 +19,17 @@ func HandleRateLimit(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("API key missing from header.")
 	}
 
-	// 1. check if api key in cache
+	// 1. check if api key is uuid
+	_, err := uuid.Parse(id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("API key is incorrect type.")
+	}
+
+	// 2. check if api key in cache
 	_, ok = cache.ApiKeyCache.Get(id)
 	if !ok {
-		// 2. not in cache, check in db
-		_, err := uuid.Parse(id)
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).SendString("API key is incorrect type.")
-		}
-
+		// 3. not in cache, check in db
+		// Slow point...how to speed it up?
 		inTable, err := database.Conn.IsApiKeyInTable(context.Background(), id)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("API key database error.")
@@ -34,10 +37,16 @@ func HandleRateLimit(c *fiber.Ctx) error {
 		if !inTable {
 			return c.Status(fiber.StatusBadRequest).SendString("API key is invalid.")
 		}
-		// inTable, add to cache
+
+		// background task
+		var wg sync.WaitGroup
+		wg.Add(1)
 		go func() {
+			defer wg.Done()
+			// valid, add to cache
 			cache.ApiKeyCache.Add(id, true)
 		}()
+		// defer wg.Wait()
 	}
 
 	limitString := c.Get("limit")
@@ -64,8 +73,7 @@ func HandleRateLimit(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("Unable to config rate limiter")
 	}
 
-	// TODO: how should we handle context
-	if s.RateLimit(context.TODO()) {
+	if s.RateLimit(c.Context()) {
 		return c.SendStatus(fiber.StatusOK)
 	}
 	return c.SendStatus(fiber.StatusTooManyRequests)

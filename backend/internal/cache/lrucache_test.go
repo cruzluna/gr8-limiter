@@ -33,9 +33,7 @@ func TestCacheConcurrent(t *testing.T) {
 		case s := <-ch:
 			// do work
 			go func(str string) {
-				// defer wg.Done()
 				start := time.Now()
-
 				// add to cache
 				value, ok := lru.Get(str)
 				if !ok {
@@ -45,7 +43,6 @@ func TestCacheConcurrent(t *testing.T) {
 			}(s)
 		case <-done:
 			return
-
 		}
 	}
 }
