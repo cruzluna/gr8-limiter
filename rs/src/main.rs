@@ -10,9 +10,20 @@ use chrono;
 use redis::Commands;
 
 #[derive(Clone)]
-#[allow(dead_code)]
 pub struct AppState {
-    redis_conn: redis::Connection,
+    redis_client: redis::Client,
+}
+
+impl AppState {
+    pub fn new(redis_client: redis::Client) -> Self {
+        AppState { redis_client }
+    }
+
+    pub fn get_redis_connection(&self) -> redis::Connection {
+        self.redis_client
+            .get_connection()
+            .expect("Failed to get Redis connection")
+    }
 }
 
 #[tokio::main]
@@ -21,12 +32,16 @@ async fn main() {
     // TODO: Logger
 
     // redis
-    let client = redis::Client::open("redis://127.0.0.1/")
-        .expect("Invalid connection URL")
-        .get_connection()
-        .expect("Couldn't connect to redis");
+    // let mut client = redis::Client::open("redis://127.0.0.1/")
+    //     .expect("Invalid connection URL")
+    //     .get_connection()
+    //     .expect("Couldn't connect to redis");
 
-    let state = AppState { redis_conn: client };
+    let client = redis::Client::open("redis://127.0.0.1/").expect("Invalid connection URL");
+
+    let state = AppState {
+        redis_client: client,
+    };
     let app = Router::new()
         .route("/api/v1/ratelimit", post(post_rate_limit))
         .fallback(handler_404)
@@ -40,9 +55,9 @@ async fn main() {
 #[debug_handler]
 // TODO: Fix the return type
 async fn post_rate_limit(headers: HeaderMap, State(state): State<AppState>) -> impl IntoResponse {
-    for (key, value) in headers.iter() {
-        println!("Header: {:?} - {:?}", key, value);
-    }
+    // for (key, value) in headers.iter() {
+    //     println!("Header: {:?} - {:?}", key, value);
+    // }
 
     let api_key = match headers.get("x-api-key") {
         // TODO: Change the unwrap
@@ -57,9 +72,17 @@ async fn post_rate_limit(headers: HeaderMap, State(state): State<AppState>) -> i
         window_size: 1,
     };
 
-    match rate_limit(state.redis_conn, &rc) {
-        Ok(_) => (StatusCode::TOO_MANY_REQUESTS, "Rate limited"),
-        Err(_) => (StatusCode::OK, "Good."),
+    let conn = state.get_redis_connection();
+
+    match rate_limit(conn, &rc) {
+        Ok(should_rate_limit) => {
+            if should_rate_limit {
+                (StatusCode::TOO_MANY_REQUESTS, "Rate limited")
+            } else {
+                (StatusCode::OK, "Good.")
+            }
+        }
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, "Something went wrong."),
     }
 }
 
@@ -80,11 +103,15 @@ struct RateLimitConfig {
 ///
 /// This function will return an error if .
 // sliding window algo. Rate limited returns true and not rate limited is false.
-fn rate_limit(client: redis::Connection, rc: &RateLimitConfig) -> Result<bool, redis::RedisError> {
+fn rate_limit(
+    mut redis_con: redis::Connection,
+    rc: &RateLimitConfig,
+) -> Result<bool, redis::RedisError> {
+    println!("Made it into rate_limt");
     let now = chrono::Utc::now().timestamp();
-    client.zrembyscore(&rc.id, 0, now)?;
+    redis_con.zrembyscore(&rc.id, 0, now)?;
 
-    match client.zcard::<&String, i64>(&rc.id) {
+    match redis_con.zcard::<&String, i64>(&rc.id) {
         Ok(cur) => {
             // check if reqs is within limit
             if cur > rc.limit {
@@ -97,13 +124,17 @@ fn rate_limit(client: redis::Connection, rc: &RateLimitConfig) -> Result<bool, r
     };
 
     // req not ratelimited, add it to the curr window
-    let _ = client.zadd::<&String, i64, f64, i64>(&rc.id, now as f64, now);
+    let _ = redis_con.zadd::<&String, i64, f64, i64>(&rc.id, now as f64, now);
 
     // whole set should expire after window size
-    let _ = client.expire::<&String, i64>(
+    let _ = redis_con.expire::<&String, i64>(
         &rc.id,
         chrono::Duration::seconds(rc.window_size).num_seconds(),
     );
+
+    // Runtime error
+    let dum = redis_con.get::<&String, i64>(&rc.id).unwrap();
+    println!("Key: {} - Value: {}", &rc.id, dum);
 
     // not rate limited
     Ok(false)
