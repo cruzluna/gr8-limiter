@@ -81,11 +81,11 @@ func (rc *RateConfig) RateLimit(ctx context.Context) bool {
 	current, err := rdb.ZCard(ctx, key).Result()
 	if err != nil {
 		fmt.Println("Error:", err)
-		return false
+		return true
 	}
 	if current >= rc.Limit {
 		// rate limited
-		return false
+		return true
 	}
 
 	// req successful, add it to curr window
@@ -95,5 +95,5 @@ func (rc *RateConfig) RateLimit(ctx context.Context) bool {
 	})
 	// whole set should expire after window size
 	rdb.Expire(ctx, key, time.Duration(rc.WindowSize)*time.Second)
-	return true
+	return false
 }

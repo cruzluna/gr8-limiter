@@ -74,7 +74,7 @@ func HandleRateLimit(c *fiber.Ctx) error {
 	}
 
 	if s.RateLimit(c.Context()) {
-		return c.SendStatus(fiber.StatusOK)
+		return c.SendStatus(fiber.StatusTooManyRequests)
 	}
-	return c.SendStatus(fiber.StatusTooManyRequests)
+	return c.SendStatus(fiber.StatusOK)
 }
